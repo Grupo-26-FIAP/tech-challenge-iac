@@ -1,1 +1,1 @@
-# tech-challenge-kubernetes
+# tech-challenge-iac
