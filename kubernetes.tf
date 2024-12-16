@@ -251,7 +251,7 @@ resource "kubernetes_service" "api_service" {
   }
   spec {
     selector = {
-      app = "tech-challenge-api"
+      app = "tech-challenge-deployment"
     }
     port {
       port        = 80
