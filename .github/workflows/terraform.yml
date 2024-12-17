@@ -1,3 +1,4 @@
+name: Terraform
 on:
   push:
     branches:
@@ -47,13 +48,13 @@ jobs:
         id: apply
         run: terraform apply -input=false -auto-approve
         env:
-          TF_VAR_COGNITO_PASSWORD_TEMP: ${{ secrets.TF_VAR_COGNITO_PASSWORD_TEMP }}
-          TF_VAR_POSTGRES_DB: ${{ secrets.TF_VAR_POSTGRES_DB }}
-          TF_VAR_POSTGRES_USER: ${{ secrets.TF_VAR_POSTGRES_USER }}
-          TF_VAR_POSTGRES_PASSWORD: ${{ secrets.TF_VAR_POSTGRES_PASSWORD }}
-          TF_VAR_POSTGRES_HOST: ${{ secrets.TF_VAR_POSTGRES_HOST }}
-          TF_VAR_USER_TOKEN_SECRET: ${{ secrets.TF_VAR_USER_TOKEN_SECRET }}
-          TF_VAR_CONTAINER_IMAGE: ${{ env.TF_VAR_CONTAINER_IMAGE }}
+          TF_VAR_cognito_password_temp: ${{ secrets.TF_VAR_COGNITO_PASSWORD_TEMP }}
+          TF_VAR_postgres_db: ${{ secrets.TF_VAR_POSTGRES_DB }}
+          TF_VAR_postgres_user: ${{ secrets.TF_VAR_POSTGRES_USER }}
+          TF_VAR_postgres_password: ${{ secrets.TF_VAR_POSTGRES_PASSWORD }}
+          TF_VAR_postgres_host: ${{ secrets.TF_VAR_POSTGRES_HOST }}
+          TF_VAR_user_token_secret: ${{ secrets.TF_VAR_USER_TOKEN_SECRET }}
+          TF_VAR_container_image: ${{ env.TF_VAR_CONTAINER_IMAGE }}
 
 
 
