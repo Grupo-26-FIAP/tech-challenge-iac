@@ -1,6 +1,6 @@
 
 resource "aws_lambda_function" "signIn" {
-  function_name = "signIn"
+  function_name = "auth-signin"
   role          = "arn:aws:iam::473271437932:role/LabRole"
   handler       = "index.handler"
   runtime       = "nodejs18.x"
@@ -24,7 +24,7 @@ resource "aws_lambda_function" "signIn" {
 }
 
 resource "aws_lambda_function" "signUp" {
-  function_name = "signUp"
+  function_name = "auth-signup"
   role          = "arn:aws:iam::473271437932:role/LabRole"
   handler       = "index.handler"
   runtime       = "nodejs18.x"
