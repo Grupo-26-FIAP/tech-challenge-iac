@@ -84,35 +84,33 @@ variable "subnet_availability_zone_az_2" {
 
 variable "cognito_password_temp" {
   type        = string
+  default = "Jf#25061998"
 }
 
 variable "postgres_db" {
   type = string
+  default = "postgres"
 }
 
 variable "postgres_user" {
   type = string
+  default = "postgres"
 }
 
 variable "postgres_password" {
   type = string
+  default = "postgres"
 }
 
 variable "postgres_host" {
   type = string
+  default = "tech-challenge-rds-tf.cjrf4fiwy081.us-east-1.rds.amazonaws.com"
 }
 
 variable "user_token_secret" {
   type = string
 }
 
-variable "cognito_client_id" {
-  type = string
-}
-
-variable "cognito_user_pool_id" {
-  type = string
-}
 
 
 

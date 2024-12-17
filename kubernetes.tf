@@ -29,7 +29,7 @@ resource "kubernetes_deployment" "tech_challenge_deployment" {
 
         container {
           name  = "tech-challenge-api"
-          image = "jhonideveloper/tech-challenge-api:2.11"
+          image = "jhonideveloper/tech-challenge-api:2.12"
 
           resources {
             requests = {
@@ -206,13 +206,15 @@ resource "kubernetes_secret" "api-secrets" {
     POSTGRES_USER     = var.postgres_user
     POSTGRES_PASSWORD = var.postgres_password
     USER_TOKEN_SECRET = var.user_token_secret
-    COGNITO_CLIENT_ID = var.cognito_client_id
-    COGNITO_USER_POOL_ID = var.cognito_user_pool_id
+    COGNITO_CLIENT_ID = aws_cognito_user_pool_client.tech-challenge_client.id
+    COGNITO_USER_POOL_ID = aws_cognito_user_pool.tech-challenge_admin_pool.id
   }
 
   lifecycle {
     prevent_destroy = false
   }
+
+  depends_on = [ aws_cognito_user_pool_client.tech-challenge_client]
 }
 
 resource "kubernetes_config_map" "general-settings" {
@@ -249,7 +251,7 @@ resource "kubernetes_service" "api_service" {
   }
   spec {
     selector = {
-      app = "tech-challenge-api"
+      app = "tech-challenge-deployment"
     }
     port {
       port        = 80

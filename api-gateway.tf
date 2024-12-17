@@ -1,7 +1,7 @@
 
 data "aws_lb" "tech_challenge_lb" {
   tags = {
-    "kubernetes.io/service-name" = "default/service-tech_challenge-app"
+    "kubernetes.io/service-name" = "default/api-service"
   }
 
   depends_on = [kubernetes_service.api_service]
