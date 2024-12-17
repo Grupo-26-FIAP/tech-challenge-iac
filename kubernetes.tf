@@ -29,7 +29,7 @@ resource "kubernetes_deployment" "tech_challenge_deployment" {
 
         container {
           name  = "tech-challenge-api"
-          image = "jhonideveloper/tech-challenge-api:2.12"
+          image = var.container_image
 
           resources {
             requests = {
