@@ -29,8 +29,7 @@ resource "kubernetes_deployment" "tech_challenge_deployment" {
 
         container {
           name  = "tech-challenge-api"
-          image = var.container_image
-
+          image = "diname/tech-challenge-fiap-api:latest"
           resources {
             requests = {
               memory : "512Mi"
