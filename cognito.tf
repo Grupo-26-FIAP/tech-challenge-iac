@@ -2,15 +2,30 @@
 resource "aws_cognito_user_pool" "tech-challenge_admin_pool" {
   name = "tech-challenge-admin-pool"
 
+   schema {
+    attribute_data_type = "String"
+    name                = "cpf"
+    mutable             = true
+  }
+
+  schema {
+    attribute_data_type = "String"
+    name                = "name"
+    mutable             = true
+  }
+
+  schema {
+    attribute_data_type = "String"
+    name                = "email"
+    required            = true
+    mutable             = true
+  }
+
   admin_create_user_config {
     allow_admin_create_user_only = true
   }
   password_policy {
     minimum_length    = 8
-    require_lowercase = true
-    require_numbers   = true
-    require_symbols   = true
-    require_uppercase = true
   }
   username_attributes      = []
   mfa_configuration        = "OFF"

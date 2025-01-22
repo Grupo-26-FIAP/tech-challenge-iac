@@ -129,6 +129,31 @@ resource "aws_apigatewayv2_integration" "loadBalancer_eks" {
   depends_on = [kubernetes_service.api_service]
 }
 
+
+### exemplo jwt validation
+
+# resource "aws_apigatewayv2_authorizer" "example_authorizer" {
+#   api_id = aws_apigatewayv2_api.example_http_api.id
+#   name   = "example-authorizer"
+#   authorizer_type = "JWT"
+
+#   identity_sources = ["$request.header.Authorization"]
+
+#   jwt_configuration {
+#     issuer = "https://your-issuer-url/" // Token signing key URL sem o /.well-known/jwks.json
+#     audience = ["your-audience"] // Client ID
+#   }
+# }
+
+# resource "aws_apigatewayv2_route" "example_route" {
+#   api_id    = aws_apigatewayv2_api.example_http_api.id
+#   route_key = "GET /example"
+#   authorization_type = "JWT"
+#   authorizer_id = aws_apigatewayv2_authorizer.example_authorizer.id
+# }
+
+
+
 resource "aws_security_group" "api_gw_sg" {
   name        = "api-gw-sg"
   description = "Allow API Gateway access"
