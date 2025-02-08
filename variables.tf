@@ -84,31 +84,9 @@ variable "subnet_availability_zone_az_2" {
 
 variable "cognito_password_temp" {
   type        = string
+  default     = "cognito"
 }
 
-variable "postgres_db" {
-  type = string
-}
-
-variable "postgres_user" {
-  type = string
-}
-
-variable "postgres_password" {
-  type = string
-}
-
-variable "postgres_host" {
-  type = string
-}
-
-variable "user_token_secret" {
-  type = string
-}
-
-variable "container_image"{
-  type = string
-}
 
 
 
