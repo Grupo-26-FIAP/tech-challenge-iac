@@ -25,7 +25,7 @@ resource "aws_cognito_user_pool" "tech-challenge_admin_pool" {
     allow_admin_create_user_only = true
   }
   password_policy {
-    minimum_length    = 5
+    minimum_length    = 6
   }
   username_attributes      = []
   mfa_configuration        = "OFF"
