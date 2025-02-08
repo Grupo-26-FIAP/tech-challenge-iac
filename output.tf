@@ -20,10 +20,10 @@ output "public_subnet_2_id" {
 }
 
 
-output "app_name" {
-  value = kubernetes_service.api_service.metadata[0].name
+output "product_catalog_service_lb" {
+  value = kubernetes_service.product_catalog_service_lb.metadata[0].name
 }
 
-output "load_balancer_hostname" {
-  value = data.kubernetes_service.api_service_data.status[0].load_balancer[0].ingress[0].hostname
+output "product_catalog_service_lb_hostname" {
+  value = data.kubernetes_service.product_catalog_service.status[0].load_balancer[0].ingress[0].hostname
 }
