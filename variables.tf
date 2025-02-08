@@ -84,6 +84,7 @@ variable "subnet_availability_zone_az_2" {
 
 variable "cognito_password_temp" {
   type        = string
+  default     = "cognito"
 }
 
 
