@@ -98,7 +98,7 @@ resource "kubernetes_ingress_v1" "api_ingress" {
     rule {
       http {
         path {
-          path      = "/products"
+          path      = "/product"
           path_type = "Prefix"
 
           backend {
@@ -111,7 +111,7 @@ resource "kubernetes_ingress_v1" "api_ingress" {
           }
         }
         path {
-          path      = "/orders"
+          path      = "/order"
           path_type = "Prefix"
 
           backend {
@@ -144,7 +144,7 @@ resource "kubernetes_ingress_v1" "api_ingress" {
 
           backend {
             service {
-              name = kubernetes_service.production_service_lb.metadata[0].name
+              name = kubernetes_service.payment_service_lb.metadata[0].name
               port {
                 number = 80
               }
