@@ -61,9 +61,6 @@ resource "aws_apigatewayv2_integration" "lb_orders_integration" {
 }
 
 
-
-
-
 data "aws_lb" "product_catalog_service_lb" {
   tags = {
     "kubernetes.io/service-name" = "default/product-catalog-service"
@@ -78,10 +75,52 @@ data "aws_lb_listener" "product_catalog_service_lb_listener" {
 
   depends_on = [kubernetes_service.product_catalog_service_lb]
 }
-resource "aws_apigatewayv2_route" "product_route" {
+resource "aws_apigatewayv2_route" "product_get_route" {
+  api_id    = aws_apigatewayv2_api.http_api.id
+  route_key = "GET /product/{proxy+}"
+  target    = "integrations/${aws_apigatewayv2_integration.lb_products_integration.id}"
+
+  lifecycle {
+    prevent_destroy = false
+  }
+
+  depends_on = [aws_apigatewayv2_integration.lb_products_integration]
+}
+
+resource "aws_apigatewayv2_route" "product_post_route" {
   api_id             = aws_apigatewayv2_api.http_api.id
-  route_key          = "ANY /product/{proxy+}"
+  route_key          = "POST /product/{proxy+}"
   target             = "integrations/${aws_apigatewayv2_integration.lb_products_integration.id}"
+  authorization_type = "CUSTOM"
+  authorizer_id      = aws_apigatewayv2_authorizer.lambda_authorizer.id
+
+  lifecycle {
+    prevent_destroy = false
+  }
+
+  depends_on = [aws_apigatewayv2_integration.lb_products_integration]
+}
+
+resource "aws_apigatewayv2_route" "product_put_route" {
+  api_id             = aws_apigatewayv2_api.http_api.id
+  route_key          = "PUT /product/{proxy+}"
+  target             = "integrations/${aws_apigatewayv2_integration.lb_products_integration.id}"
+  authorization_type = "CUSTOM"
+  authorizer_id      = aws_apigatewayv2_authorizer.lambda_authorizer.id
+
+  lifecycle {
+    prevent_destroy = false
+  }
+
+  depends_on = [aws_apigatewayv2_integration.lb_products_integration]
+}
+
+resource "aws_apigatewayv2_route" "product_delete_route" {
+  api_id             = aws_apigatewayv2_api.http_api.id
+  route_key          = "DELETE /product/{proxy+}"
+  target             = "integrations/${aws_apigatewayv2_integration.lb_products_integration.id}"
+  authorization_type = "CUSTOM"
+  authorizer_id      = aws_apigatewayv2_authorizer.lambda_authorizer.id
 
   lifecycle {
     prevent_destroy = false
@@ -104,11 +143,6 @@ resource "aws_apigatewayv2_integration" "lb_products_integration" {
 
   depends_on = [kubernetes_service.product_catalog_service_lb]
 }
-
-
-
-
-
 data "aws_lb" "payment_service_lb" {
   tags = {
     "kubernetes.io/service-name" = "default/payment-service"
@@ -151,8 +185,6 @@ resource "aws_apigatewayv2_integration" "lb_payment_integration" {
 }
 
 
-
-
 data "aws_lb" "production_service_lb" {
   tags = {
     "kubernetes.io/service-name" = "default/production-service"
@@ -167,9 +199,9 @@ data "aws_lb_listener" "production_service_lb_listener" {
 
   depends_on = [kubernetes_service.production_service_lb]
 }
-resource "aws_apigatewayv2_route" "production_route" {
+resource "aws_apigatewayv2_route" "production_get_route" {
   api_id             = aws_apigatewayv2_api.http_api.id
-  route_key          = "ANY /production/{proxy+}"
+  route_key          = "GET /production/{proxy+}"
   target             = "integrations/${aws_apigatewayv2_integration.lb_production_integration.id}"
 
   lifecycle {
@@ -178,6 +210,23 @@ resource "aws_apigatewayv2_route" "production_route" {
 
   depends_on = [aws_apigatewayv2_integration.lb_production_integration]
 }
+
+resource "aws_apigatewayv2_route" "production_put_route" {
+  api_id             = aws_apigatewayv2_api.http_api.id
+  route_key          = "PUT /production/{proxy+}"
+  target             = "integrations/${aws_apigatewayv2_integration.lb_production_integration.id}"
+  authorization_type = "CUSTOM"
+  authorizer_id      = aws_apigatewayv2_authorizer.lambda_authorizer.id
+
+  lifecycle {
+    prevent_destroy = false
+  }
+
+  depends_on = [aws_apigatewayv2_integration.lb_production_integration]
+}
+
+
+
 
 resource "aws_apigatewayv2_integration" "lb_production_integration" {
   api_id             = aws_apigatewayv2_api.http_api.id
@@ -195,86 +244,88 @@ resource "aws_apigatewayv2_integration" "lb_production_integration" {
 }
 
 
+resource "aws_apigatewayv2_integration" "signin_integration" {
+  api_id             = aws_apigatewayv2_api.http_api.id
+  integration_type   = "AWS_PROXY"
+  integration_uri    = aws_lambda_function.signIn.invoke_arn
+  payload_format_version = "2.0"
+}
 
+resource "aws_apigatewayv2_route" "signin_route" {
+  api_id    = aws_apigatewayv2_api.http_api.id
+  route_key = "POST /identify"
 
+  target = "integrations/${aws_apigatewayv2_integration.signin_integration.id}"
+}
 
+resource "aws_lambda_permission" "allow_apigateway_signin" {
+  statement_id  = "AllowAPIGatewayInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.signIn.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn = "${aws_apigatewayv2_api.http_api.execution_arn}/*/*"
+}
 
+resource "aws_apigatewayv2_integration" "signup_integration" {
+  api_id             = aws_apigatewayv2_api.http_api.id
+  integration_type   = "AWS_PROXY"
+  integration_uri    = aws_lambda_function.signUp.invoke_arn
+  payload_format_version = "2.0"
+}
 
+resource "aws_apigatewayv2_route" "signup_route" {
+  api_id    = aws_apigatewayv2_api.http_api.id
+  route_key = "POST /signup"
 
-# resource "aws_apigatewayv2_integration" "signin_integration" {
-#   api_id             = aws_apigatewayv2_api.http_api.id
-#   integration_type   = "AWS_PROXY"
-#   integration_uri    = aws_lambda_function.signIn.invoke_arn
-#   payload_format_version = "2.0"
-# }
+  target = "integrations/${aws_apigatewayv2_integration.signup_integration.id}"
+}
 
-# resource "aws_apigatewayv2_route" "signin_route" {
-#   api_id    = aws_apigatewayv2_api.http_api.id
-#   route_key = "POST /signin"
+resource "aws_lambda_permission" "allow_apigateway_signup" {
+  statement_id  = "AllowAPIGatewayInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.signUp.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn = "${aws_apigatewayv2_api.http_api.execution_arn}/*/*"
+}
 
-#   target = "integrations/${aws_apigatewayv2_integration.signin_integration.id}"
-# }
+resource "aws_apigatewayv2_integration" "administrative_integration" {
+  api_id             = aws_apigatewayv2_api.http_api.id
+  integration_type   = "AWS_PROXY"
+  integration_uri    = aws_lambda_function.administrative.invoke_arn
+  payload_format_version = "2.0"
+}
 
-# resource "aws_lambda_permission" "allow_apigateway_signin" {
-#   statement_id  = "AllowAPIGatewayInvoke"
-#   action        = "lambda:InvokeFunction"
-#   function_name = aws_lambda_function.signIn.function_name
-#   principal     = "apigateway.amazonaws.com"
-#   source_arn = "${aws_apigatewayv2_api.http_api.execution_arn}/*/*"
-# }
+resource "aws_apigatewayv2_route" "administrative_route" {
+  api_id    = aws_apigatewayv2_api.http_api.id
+  route_key = "POST /administrative"
 
+  target = "integrations/${aws_apigatewayv2_integration.administrative_integration.id }"
+}
 
+resource "aws_apigatewayv2_authorizer" "lambda_authorizer" {
+  api_id = aws_apigatewayv2_api.http_api.id
+  name   = "lambda_authorizer"
+  authorizer_type = "REQUEST"
+  authorizer_uri  = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${aws_lambda_function.authorizer.arn}/invocations"
+  identity_sources = ["$request.header.authorization"]
+  authorizer_payload_format_version = "2.0"
+}
 
-# resource "aws_apigatewayv2_integration" "signup_integration" {
-#   api_id             = aws_apigatewayv2_api.http_api.id
-#   integration_type   = "AWS_PROXY"
-#   integration_uri    = aws_lambda_function.signUp.invoke_arn
-#   payload_format_version = "2.0"
-# }
+resource "aws_lambda_permission" "allow_apigateway_authorizer" {
+  statement_id  = "AllowAPIGatewayInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.authorizer.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_apigatewayv2_api.http_api.execution_arn}/*/*"
+}
 
-# resource "aws_apigatewayv2_route" "signup_route" {
-#   api_id    = aws_apigatewayv2_api.http_api.id
-#   route_key = "POST /signup"
-
-#   target = "integrations/${aws_apigatewayv2_integration.signup_integration.id}"
-# }
-
-# resource "aws_lambda_permission" "allow_apigateway_signup" {
-#   statement_id  = "AllowAPIGatewayInvoke"
-#   action        = "lambda:InvokeFunction"
-#   function_name = aws_lambda_function.signUp.function_name
-#   principal     = "apigateway.amazonaws.com"
-#   source_arn = "${aws_apigatewayv2_api.http_api.execution_arn}/*/*"
-# }
-
-
-
-
-
-
-
-
-### exemplo jwt validation
-
-# resource "aws_apigatewayv2_authorizer" "example_authorizer" {
-#   api_id = aws_apigatewayv2_api.example_http_api.id
-#   name   = "example-authorizer"
-#   authorizer_type = "JWT"
-
-#   identity_sources = ["$request.header.Authorization"]
-
-#   jwt_configuration {
-#     issuer = "https://your-issuer-url/" // Token signing key URL sem o /.well-known/jwks.json
-#     audience = ["your-audience"] // Client ID
-#   }
-# }
-
-# resource "aws_apigatewayv2_route" "example_route" {
-#   api_id    = aws_apigatewayv2_api.example_http_api.id
-#   route_key = "GET /example"
-#   authorization_type = "JWT"
-#   authorizer_id = aws_apigatewayv2_authorizer.example_authorizer.id
-# }
+resource "aws_lambda_permission" "allow_apigateway_administrative" {
+  statement_id  = "AllowAPIGatewayInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.administrative.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn = "${aws_apigatewayv2_api.http_api.execution_arn}/*/*"
+}
 
 resource "aws_apigatewayv2_vpc_link" "vpc_link" {
   name = "tech_challenge_vpc_link"

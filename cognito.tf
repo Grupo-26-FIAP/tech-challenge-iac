@@ -22,7 +22,7 @@ resource "aws_cognito_user_pool" "tech-challenge_admin_pool" {
   }
 
   admin_create_user_config {
-    allow_admin_create_user_only = true
+    allow_admin_create_user_only = false
   }
   password_policy {
     minimum_length    = 6
@@ -40,6 +40,7 @@ resource "aws_cognito_user_pool" "tech-challenge_admin_pool" {
   email_configuration {
     email_sending_account = "COGNITO_DEFAULT"
   }
+
 }
 
 resource "aws_cognito_user_pool_domain" "tech-challenge-domain" {
